@@ -26,9 +26,14 @@
         "pestphp/pest": "^1.20"
     },
     "scripts": {
-        "lint": "php-cs-fixer fix --dry-run -v --ansi --allow-risky=yes --config=./.php-cs-fixer.php",
-        "lint-diff": "php-cs-fixer fix --dry-run -v --ansi --allow-risky=yes --diff --config=./.php-cs-fixer.php",
+        "lint": "@fix --dry-run",
+        "lint-diff": "@fix --dry-run --diff",
         "fix": "php-cs-fixer fix --ansi --allow-risky=yes -v --config=./.php-cs-fixer.php",
         "test": "pest"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
