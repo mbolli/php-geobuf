@@ -21,9 +21,9 @@ class Decoder {
     /**
      * Decode the geobuf file `$fileName` and save the resulting json as `$jsonFile`.
      * Returns the resulting file size if successful, or false.
-     * @param string $geobufFile
-     * @param string $jsonFile
+     *
      * @return false|int
+     *
      * @throws GeobufException
      */
     public static function decodeFileToJsonFile(string $geobufFile, string $jsonFile) {
@@ -31,9 +31,8 @@ class Decoder {
     }
 
     /**
-     * Decode the geobuf file `$fileName` to a json string which is returned
-     * @param string $fileName
-     * @return string
+     * Decode the geobuf file `$fileName` to a json string which is returned.
+     *
      * @throws GeobufException
      */
     public static function decodeFileToJson(string $fileName): string {
@@ -42,8 +41,7 @@ class Decoder {
 
     /**
      * Decode the geobuf input `$encodedInput` to a json string which is returned.
-     * @param string $encodedInput
-     * @return string
+     *
      * @throws GeobufException
      */
     public static function decodeToJson(string $encodedInput): string {
@@ -52,8 +50,7 @@ class Decoder {
 
     /**
      * Decode the geobuf file `$fileName` and return the array.
-     * @param string $fileName
-     * @return array
+     *
      * @throws GeobufException
      */
     public static function decodeFileToArray(string $fileName): array {
@@ -62,14 +59,13 @@ class Decoder {
 
     /**
      * Decode the geobuf input `$encodedInput` and return the array.
-     * @param string $encodedInput
-     * @return array
+     *
      * @throws GeobufException
      */
     public static function decodeToArray(string $encodedInput): array {
         static::$data = new Data();
         static::$data->mergeFromString($encodedInput);
-        static::$e = 10**(static::$data->getPrecision());
+        static::$e = 10 ** static::$data->getPrecision();
         static::$dim = static::$data->getDimensions();
 
         try {
@@ -90,10 +86,6 @@ class Decoder {
         throw new GeobufException('Unknown data type ' . static::$data->getDataType());
     }
 
-    /**
-     * @param FeatureCollection $featureCollection
-     * @return array
-     */
     private static function decodeFeatureCollection(FeatureCollection $featureCollection): array {
         $obj = ['type' => 'FeatureCollection', 'features' => []];
 
@@ -106,10 +98,6 @@ class Decoder {
         return $obj;
     }
 
-    /**
-     * @param Feature $feature
-     * @return array
-     */
     private static function decodeFeature(Feature $feature): array {
         $obj = ['type' => 'Feature'];
 
@@ -118,7 +106,7 @@ class Decoder {
 
         $obj['geometry'] = static::decodeGeometry($feature->getGeometry());
 
-        if (count($feature->getProperties()) > 0) {
+        if (\count($feature->getProperties()) > 0) {
             $obj['properties'] = static::decodeProperties($feature->getProperties(), $feature->getValues());
         }
 
@@ -126,24 +114,22 @@ class Decoder {
     }
 
     /**
-     * @param array|RepeatedField $props
+     * @param array|RepeatedField   $props
      * @param RepeatedField|Value[] $values
-     * @param null|array $dest
-     * @return array
      */
     private static function decodeProperties($props, $values, ?array &$dest = null): array {
         $dest ??= [];
-        $numProps = count($props);
+        $numProps = \count($props);
         if (0 === $numProps) {
             return $dest;
         }
 
         $keys = static::$data->getKeys();
-        $r = $numProps > 2 ? range(0, $numProps-1, 2) : [0];
+        $r = $numProps > 2 ? range(0, $numProps - 1, 2) : [0];
 
         foreach ($r as $i) {
-            $key = (string)$keys[$props[$i]];
-            $val = $values[$props[$i+1]];
+            $key = (string) $keys[$props[$i]];
+            $val = $values[$props[$i + 1]];
             $valueType = $val->getValueType();
 
             if ('string_value' == $valueType) {
@@ -164,10 +150,6 @@ class Decoder {
         return $dest;
     }
 
-    /**
-     * @param Feature $feature
-     * @param array $objJson
-     */
     private static function decodeId(Feature $feature, array &$objJson): void {
         $idType = $feature->getIdType();
         if ('id' == $idType) {
@@ -178,7 +160,6 @@ class Decoder {
     }
 
     /**
-     * @param null|Geometry $geometry
      * @return array
      */
     private static function decodeGeometry(?Geometry $geometry): ?array {
@@ -215,36 +196,30 @@ class Decoder {
         return $obj;
     }
 
-    /**
-     * @param float $coord
-     * @return float
-     */
     private static function decodeCoord(float $coord): float {
-        return $coord/static::$e;
+        return $coord / static::$e;
     }
 
     /**
      * @param array|RepeatedField $coords
-     * @return array
      */
     private static function decodePoint($coords): array {
         $return = [];
         foreach ($coords as $coord) { // can't use array_map as $coords might be a RepeatedField
-            $return[] = static::decodeCoord((float)$coord);
+            $return[] = static::decodeCoord((float) $coord);
         }
+
         return $return;
     }
 
     /**
      * @param array|RepeatedField $coords
-     * @param null|bool $isClosed
-     * @return array
      */
     private static function decodeLine($coords, ?bool $isClosed = false): array {
         $obj = [];
-        $numCoords = count($coords);
-        $r = range(0, static::$dim-1);
-        $r2 = $numCoords > static::$dim ? range(0, $numCoords-1, static::$dim) : [0];
+        $numCoords = \count($coords);
+        $r = range(0, static::$dim - 1);
+        $r2 = $numCoords > static::$dim ? range(0, $numCoords - 1, static::$dim) : [0];
         $p0 = array_fill(0, static::$dim, 0);
 
         foreach ($r2 as $i) {
@@ -264,14 +239,9 @@ class Decoder {
         return $obj;
     }
 
-    /**
-     * @param Geometry $geometry
-     * @param null|bool $isClosed
-     * @return array
-     */
     private static function decodeMultiLine(Geometry $geometry, ?bool $isClosed = false): array {
         $coords = $geometry->getCoords();
-        if (0 === count($geometry->getLengths())) {
+        if (0 === \count($geometry->getLengths())) {
             return [static::decodeLine($coords, $isClosed)];
         }
 
@@ -279,21 +249,17 @@ class Decoder {
         $i = 0;
 
         foreach ($geometry->getLengths() as $length) {
-            $obj[] = static::decodeLine(array_slice($coords, $i, $i + $length * static::$dim), $isClosed);
+            $obj[] = static::decodeLine(\array_slice($coords, $i, $i + $length * static::$dim), $isClosed);
             $i += $length * static::$dim;
         }
 
         return $obj;
     }
 
-    /**
-     * @param Geometry $geometry
-     * @return array
-     */
     private static function decodeMultiPolygon(Geometry $geometry): array {
         $lengths = $geometry->getLengths();
         $coords = $geometry->getCoords();
-        if (0 === count($lengths)) {
+        if (0 === \count($lengths)) {
             return [[static::decodeLine($coords, true)]];
         }
 
@@ -302,14 +268,14 @@ class Decoder {
         $j = 1;
         $numPolygons = $lengths[0];
 
-        foreach (range(0, $numPolygons-1) as $n) {
+        foreach (range(0, $numPolygons - 1) as $n) {
             $numRings = $lengths[$j];
-            $j++;
+            ++$j;
             $rings = [];
 
-            foreach (array_slice($coords, $j, $j + $numRings) as $l) {
-                $rings[] = static::decodeLine(array_slice($coords, $i, $i + $l * static::$dim), true);
-                $j++;
+            foreach (\array_slice($coords, $j, $j + $numRings) as $l) {
+                $rings[] = static::decodeLine(\array_slice($coords, $i, $i + $l * static::$dim), true);
+                ++$j;
                 $i += $l * static::$dim;
             }
 

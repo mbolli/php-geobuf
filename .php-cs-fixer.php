@@ -8,10 +8,12 @@ $config = new PhpCsFixer\Config();
 return $config
     ->setRiskyAllowed(true)
     ->setRules([
-        '@PHP74Migration:risky' => true,
-        '@PSR12:risky' => true,
+        '@PHP80Migration:risky' => true,
+        '@PHP82Migration' => true,
         '@PSR12' => true,
-        '@PHP74Migration' => true,
+        '@PSR12:risky' => true,
+        '@Symfony' => true,
+        '@Symfony:risky' => true,
         'align_multiline_comment' => true,
         'array_syntax' => true,
         'braces' => ['position_after_control_structures'=>'same','position_after_functions_and_oop_constructs'=>'same'],
