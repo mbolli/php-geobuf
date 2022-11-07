@@ -84,8 +84,8 @@ test('codec: a circle with potential accumulating error', function () {
         $x = round($z[0] * 1000000);
         $y = round($z[1] * 1000000);
         // handle negative zero case (tape issue)
-        if ($x === 0) $x = 0;
-        if ($y === 0) $y = 0;
+        if ($x == 0) $x = 0;
+        if ($y == 0) $y = 0;
         return [$x, $y];
     };
     $ringOrig = array_map($roundCoord, $feature['coordinates'][0][0]);

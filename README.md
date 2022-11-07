@@ -92,6 +92,7 @@ composer run lint # lint source files and show problems (read-only)
 composer run lint-diff # lint source files and show diff to the files fixed state (read-only)
 composer run fix # lint source files and fix the problems
 composer run test # execute all tests
+composer run analyse # run phpstan static analyzer
 ```
 
 If the PR is about the Encoder or Decoder, please add a test JSON to the `tests/geojson` folder. The test suite will automatically pick it up and test it when executed.

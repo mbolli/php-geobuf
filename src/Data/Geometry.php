@@ -84,7 +84,7 @@ class Geometry extends Message implements IHasCustomProperties {
      * @return $this
      */
     public function setType($var) {
-        GPBUtil::checkEnum($var, Type::class);
+        GPBUtil::checkEnum($var); // Type::class was 2nd argument
         $this->type = $var;
 
         return $this;

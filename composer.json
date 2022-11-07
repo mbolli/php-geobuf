@@ -12,7 +12,7 @@
     "require": {
         "google/protobuf": "^3.19",
         "ext-json": "*",
-        "php": "^7.4 || ^8.0"
+        "php": "^8.0"
     },
     "autoload": {
         "psr-4": {
@@ -23,13 +23,15 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.2",
-        "pestphp/pest": "^1.20"
+        "pestphp/pest": "^1.20",
+        "phpstan/phpstan": "^1.9"
     },
     "scripts": {
         "lint": "@fix --dry-run",
         "lint-diff": "@fix --dry-run --diff",
         "fix": "php-cs-fixer fix --ansi --allow-risky=yes -v --config=./.php-cs-fixer.php",
-        "test": "pest"
+        "test": "pest",
+        "analyse": "phpstan analyse -c .phpstan.neon"
     },
     "config": {
         "allow-plugins": {

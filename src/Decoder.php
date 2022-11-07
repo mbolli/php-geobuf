@@ -9,7 +9,7 @@ use MBolli\PhpGeobuf\Data\FeatureCollection;
 use MBolli\PhpGeobuf\Data\Geometry;
 use MBolli\PhpGeobuf\Data\Value;
 
-class Decoder {
+final class Decoder {
     private const GEOMETRY_TYPES = ['Point', 'MultiPoint', 'LineString', 'MultiLineString',
 'Polygon', 'MultiPolygon', 'GeometryCollection', ];
 
@@ -26,7 +26,7 @@ class Decoder {
      *
      * @throws GeobufException
      */
-    public static function decodeFileToJsonFile(string $geobufFile, string $jsonFile) {
+    public static function decodeFileToJsonFile(string $geobufFile, string $jsonFile): bool|int {
         return file_put_contents($jsonFile, static::decodeFileToJson($geobufFile));
     }
 
@@ -114,10 +114,9 @@ class Decoder {
     }
 
     /**
-     * @param array|RepeatedField   $props
      * @param RepeatedField|Value[] $values
      */
-    private static function decodeProperties($props, $values, ?array &$dest = null): array {
+    private static function decodeProperties(array|RepeatedField $props, array|RepeatedField $values, ?array &$dest = null): array {
         $dest ??= [];
         $numProps = \count($props);
         if (0 === $numProps) {

@@ -10,7 +10,7 @@ use MBolli\PhpGeobuf\Data\Value;
 use MBolli\PhpGeobuf\Interfaces\IHasCustomProperties;
 use MBolli\PhpGeobuf\Interfaces\IHasProperties;
 
-class Encoder {
+final class Encoder {
     private const GEOMETRY_TYPES = [
         'Point' => 0,
         'MultiPoint' => 1,
@@ -36,7 +36,7 @@ class Encoder {
      *
      * @throws GeobufException
      */
-    public static function encodeFileToBufFile(string $jsonFile, string $geobufFile, int $precision = 6, int $dim = 2) {
+    public static function encodeFileToBufFile(string $jsonFile, string $geobufFile, int $precision = 6, int $dim = 2): bool|int {
         return file_put_contents($geobufFile, static::encodeFileToBuf($jsonFile, $precision, $dim));
     }
 
@@ -57,7 +57,7 @@ class Encoder {
      *
      * @throws GeobufException
      */
-    public static function encodeToFile(string $filePath, string $dataJson, int $precision = 6, int $dim = 2) {
+    public static function encodeToFile(string $filePath, string $dataJson, int $precision = 6, int $dim = 2): bool|int {
         return file_put_contents($filePath, static::encode($dataJson));
     }
 
@@ -219,8 +219,6 @@ class Encoder {
             static::encodeInt($value, $val);
         } elseif (\is_bool($val)) {
             $value->setBoolValue($val);
-        } elseif (is_numeric($val)) {
-            static::encodeInt($value, (int) $val);
         } else {
             $value->setJsonValue(json_encode($val));
         }

@@ -1,0 +1,7 @@
+parameters:
+    level: 4
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        - '#PHPDoc tag @var above a method has no effect\.#'
