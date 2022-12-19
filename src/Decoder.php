@@ -2,7 +2,6 @@
 
 namespace MBolli\PhpGeobuf;
 
-use Exception;
 use Google\Protobuf\Internal\RepeatedField;
 use MBolli\PhpGeobuf\Data\Feature;
 use MBolli\PhpGeobuf\Data\FeatureCollection;
@@ -11,7 +10,7 @@ use MBolli\PhpGeobuf\Data\Value;
 
 final class Decoder {
     private const GEOMETRY_TYPES = ['Point', 'MultiPoint', 'LineString', 'MultiLineString',
-'Polygon', 'MultiPolygon', 'GeometryCollection', ];
+        'Polygon', 'MultiPolygon', 'GeometryCollection', ];
 
     /** @var Data */
     private static $data;
@@ -70,7 +69,7 @@ final class Decoder {
 
         try {
             static::$data->mergeFromString($encodedInput);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new GeobufException('Error while decoding Geobuf: ' . $e->getMessage(), 0, $e);
         }
 
@@ -119,7 +118,7 @@ final class Decoder {
     private static function decodeProperties(array|RepeatedField $props, array|RepeatedField $values, ?array &$dest = null): array {
         $dest ??= [];
         $numProps = \count($props);
-        if (0 === $numProps) {
+        if ($numProps === 0) {
             return $dest;
         }
 
@@ -131,17 +130,17 @@ final class Decoder {
             $val = $values[$props[$i + 1]];
             $valueType = $val->getValueType();
 
-            if ('string_value' == $valueType) {
+            if ($valueType === 'string_value') {
                 $dest[$key] = $val->getStringValue();
-            } elseif ('double_value' == $valueType) {
+            } elseif ($valueType === 'double_value') {
                 $dest[$key] = $val->getDoubleValue();
-            } elseif ('pos_int_value' == $valueType) {
+            } elseif ($valueType === 'pos_int_value') {
                 $dest[$key] = $val->getPosIntValue();
-            } elseif ('neg_int_value' == $valueType) {
+            } elseif ($valueType === 'neg_int_value') {
                 $dest[$key] = -$val->getNegIntValue();
-            } elseif ('bool_value' == $valueType) {
+            } elseif ($valueType === 'bool_value') {
                 $dest[$key] = $val->getBoolValue();
-            } elseif ('json_value' == $valueType) {
+            } elseif ($valueType === 'json_value') {
                 $dest[$key] = json_decode($val->getJsonValue(), true);
             }
         }
@@ -151,9 +150,9 @@ final class Decoder {
 
     private static function decodeId(Feature $feature, array &$objJson): void {
         $idType = $feature->getIdType();
-        if ('id' == $idType) {
+        if ($idType === 'id') {
             $objJson['id'] = $feature->getId();
-        } elseif ('int_id' == $idType) {
+        } elseif ($idType === 'int_id') {
             $objJson['id'] = $feature->getIntId();
         }
     }
@@ -162,7 +161,7 @@ final class Decoder {
      * @return array
      */
     private static function decodeGeometry(?Geometry $geometry): ?array {
-        if (null === $geometry) {
+        if ($geometry === null) {
             return null;
         }
         $gt = static::GEOMETRY_TYPES[$geometry->getType()];
@@ -186,7 +185,7 @@ final class Decoder {
                 break;
             case 'MultiLineString':
             case 'Polygon':
-                $obj['coordinates'] = static::decodeMultiLine($geometry, 'Polygon' === $gt);
+                $obj['coordinates'] = static::decodeMultiLine($geometry, $gt === 'Polygon');
                 break;
             case 'MultiPolygon':
                 $obj['coordinates'] = static::decodeMultiPolygon($geometry);
@@ -230,7 +229,7 @@ final class Decoder {
             $p0 = $p;
         }
 
-        if (true === $isClosed) {
+        if ($isClosed === true) {
             $p = array_map(fn ($j) => $coords[$j], $r);
             $obj[] = static::decodePoint($p);
         }
@@ -240,7 +239,7 @@ final class Decoder {
 
     private static function decodeMultiLine(Geometry $geometry, ?bool $isClosed = false): array {
         $coords = $geometry->getCoords();
-        if (0 === \count($geometry->getLengths())) {
+        if (\count($geometry->getLengths()) === 0) {
             return [static::decodeLine($coords, $isClosed)];
         }
 
@@ -258,7 +257,7 @@ final class Decoder {
     private static function decodeMultiPolygon(Geometry $geometry): array {
         $lengths = $geometry->getLengths();
         $coords = $geometry->getCoords();
-        if (0 === \count($lengths)) {
+        if (\count($lengths) === 0) {
             return [[static::decodeLine($coords, true)]];
         }
 

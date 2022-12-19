@@ -20,7 +20,7 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
     /**
      * Generated from protobuf field <code>.MBolli.PhpGeobuf.Data.Geometry geometry = 1;</code>.
      */
-    protected $geometry = null;
+    protected $geometry;
     /**
      * unique values.
      *
@@ -66,7 +66,7 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
     /**
      * Generated from protobuf field <code>.MBolli.PhpGeobuf.Data.Geometry geometry = 1;</code>.
      *
-     * @return null|Geometry
+     * @return Geometry|null
      */
     public function getGeometry() {
         return $this->geometry;
@@ -77,7 +77,7 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
     }
 
     public function clearGeometry(): void {
-        unset($this->geometry);
+        $this->geometry = null;
     }
 
     /**
@@ -178,6 +178,8 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
     /**
      * add unique value.
      *
+     * @param mixed $var
+     *
      * @return $this
      */
     public function addValue($var) {
@@ -216,6 +218,8 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
     /**
      * Add property.
      *
+     * @param mixed $var
+     *
      * @return $this
      */
     public function addProperty($var) {
@@ -253,6 +257,8 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
 
     /**
      * add arbitrary property.
+     *
+     * @param mixed $var
      *
      * @return $this
      */

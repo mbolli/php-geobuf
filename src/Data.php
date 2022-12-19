@@ -90,6 +90,8 @@ class Data extends Message {
     /**
      * add to the global arrays of unique keys.
      *
+     * @param mixed $var
+     *
      * @return $this
      */
     public function addKey($var) {
@@ -114,7 +116,7 @@ class Data extends Message {
     }
 
     public function clearDimensions(): void {
-        unset($this->dimensions);
+        $this->dimensions = null;
     }
 
     /**
@@ -149,7 +151,7 @@ class Data extends Message {
     }
 
     public function clearPrecision(): void {
-        unset($this->precision);
+        $this->precision = null;
     }
 
     /**
@@ -171,7 +173,7 @@ class Data extends Message {
     /**
      * Generated from protobuf field <code>.MBolli.PhpGeobuf.Data.FeatureCollection feature_collection = 4;</code>.
      *
-     * @return null|FeatureCollection
+     * @return FeatureCollection|null
      */
     public function getFeatureCollection() {
         return $this->readOneof(4);
@@ -198,7 +200,7 @@ class Data extends Message {
     /**
      * Generated from protobuf field <code>.MBolli.PhpGeobuf.Data.Feature feature = 5;</code>.
      *
-     * @return null|Feature
+     * @return Feature|null
      */
     public function getFeature() {
         return $this->readOneof(5);
@@ -225,7 +227,7 @@ class Data extends Message {
     /**
      * Generated from protobuf field <code>.MBolli.PhpGeobuf.Data.Geometry geometry = 6;</code>.
      *
-     * @return null|Geometry
+     * @return Geometry|null
      */
     public function getGeometry() {
         return $this->readOneof(6);

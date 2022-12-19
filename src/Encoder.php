@@ -2,7 +2,6 @@
 
 namespace MBolli\PhpGeobuf;
 
-use JsonException;
 use MBolli\PhpGeobuf\Data\Feature;
 use MBolli\PhpGeobuf\Data\FeatureCollection;
 use MBolli\PhpGeobuf\Data\Geometry;
@@ -69,7 +68,7 @@ final class Encoder {
     public static function encode(string $dataJson, int $precision = 6, int $dim = 2): string {
         try {
             $geoJson = json_decode($dataJson, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (\JsonException $e) {
             throw new GeobufException('Error while decoding GeoJSON: ' . $e->getMessage(), 0, $e);
         }
 
@@ -82,9 +81,9 @@ final class Encoder {
         static::$e = 10 ** $precision; // multiplier for converting coordinates into integers
 
         $dataType = static::$json['type'];
-        if ('FeatureCollection' == $dataType) {
+        if ($dataType === 'FeatureCollection') {
             static::$data->setFeatureCollection(static::encodeFeatureCollection());
-        } elseif ('Feature' == $dataType) {
+        } elseif ($dataType === 'Feature') {
             static::$data->setFeature(static::encodeFeature(static::$json));
         } else {
             static::$data->setGeometry(static::encodeGeometry(static::$json));
@@ -121,7 +120,7 @@ final class Encoder {
 
         // encode geometry
         if (\array_key_exists('geometry', $featureJson)) {
-            if (null === $featureJson['geometry']) {
+            if ($featureJson['geometry'] === null) {
                 $feature->setGeometry(null);
             } else {
                 $feature->setGeometry(static::encodeGeometry($featureJson['geometry']));
@@ -174,7 +173,7 @@ final class Encoder {
     }
 
     private static function encodeProperties(IHasProperties $obj, ?array $propsJson): void {
-        if (null === $propsJson) {
+        if ($propsJson === null) {
             return;
         }
 
@@ -191,7 +190,7 @@ final class Encoder {
 
     private static function encodeCustomProperties(IHasCustomProperties $obj, array $objJson, array $exclude): void {
         foreach ($objJson as $key => $val) {
-            if (!\in_array($key, $exclude)) {
+            if (!\in_array($key, $exclude, true)) {
                 static::encodeProperty($key, $val, $obj, true);
             }
         }
@@ -199,11 +198,12 @@ final class Encoder {
 
     /**
      * @param IHasCustomProperties|IHasProperties $obj
+     * @param mixed                               $val
      */
     private static function encodeProperty(string $key, $val, $obj, bool $custom = false): void {
         $keyIndex = array_search($key, static::$keys, true);
 
-        if (false === $keyIndex) {
+        if ($keyIndex === false) {
             static::$keys[$key] = true;
             static::$data->addKey($key);
             $keyIndex = \count(static::$data->getKeys()) - 1;
@@ -226,7 +226,7 @@ final class Encoder {
         $obj->addValue($value);
 
         $valuesIndex = \count($obj->getValues()) - 1;
-        if (true === $custom) {
+        if ($custom === true) {
             $obj->addCustomProperty($keyIndex);
             $obj->addCustomProperty($valuesIndex);
         } else {
@@ -244,7 +244,7 @@ final class Encoder {
     }
 
     private static function encodeId(Feature $feature, $id): void {
-        if (null === $id) {
+        if ($id === null) {
             return;
         }
         if (\is_int($id)) {
@@ -282,7 +282,7 @@ final class Encoder {
     }
 
     private static function addMultiLine(Geometry $geometry, array $lines, bool $isClosed = false): void {
-        if (1 !== \count($lines)) {
+        if (\count($lines) !== 1) {
             foreach ($lines as $points) {
                 $geometry->addLength(\count($points) - (int) $isClosed);
             }
@@ -296,7 +296,7 @@ final class Encoder {
     }
 
     private static function addMultiPolygon(Geometry $geometry, array $polygons): void {
-        if (1 !== \count($polygons) || 1 !== \count($polygons[0])) {
+        if (\count($polygons) !== 1 || \count($polygons[0]) !== 1) {
             $geometry->addLength(\count($polygons));
             foreach ($polygons as $rings) {
                 $geometry->addLength(\count($rings));
