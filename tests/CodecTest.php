@@ -26,7 +26,7 @@ foreach (scandir(GEOJSON_DIR) as $i => $file) {
         echo json_encode($jsonOrig) . "\n";
         echo json_encode($json) . "\n\n";*/
 
-        expect($json)->toEqualCanonicalizing($jsonOrig);
+        expect($json)->toEqual($jsonOrig);
     });
 }
 
