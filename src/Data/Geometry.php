@@ -120,8 +120,6 @@ class Geometry extends Message implements IHasCustomProperties {
     /**
      * add length to coordinate structure.
      *
-     * @param mixed $var
-     *
      * @return $this
      */
     public function addLength($var) {
@@ -204,8 +202,6 @@ class Geometry extends Message implements IHasCustomProperties {
     }
 
     /**
-     * @param mixed $var
-     *
      * @return $this
      */
     public function addValue($var) {
@@ -239,8 +235,6 @@ class Geometry extends Message implements IHasCustomProperties {
 
     /**
      * Add custom property.
-     *
-     * @param mixed $var
      *
      * @return $this
      */

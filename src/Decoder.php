@@ -26,7 +26,7 @@ final class Decoder {
      * @throws GeobufException
      */
     public static function decodeFileToJsonFile(string $geobufFile, string $jsonFile): bool|int {
-        return file_put_contents($jsonFile, static::decodeFileToJson($geobufFile));
+        return file_put_contents($jsonFile, self::decodeFileToJson($geobufFile));
     }
 
     /**
@@ -35,7 +35,7 @@ final class Decoder {
      * @throws GeobufException
      */
     public static function decodeFileToJson(string $fileName): string {
-        return static::decodeToJson(file_get_contents($fileName));
+        return self::decodeToJson(file_get_contents($fileName));
     }
 
     /**
@@ -44,7 +44,7 @@ final class Decoder {
      * @throws GeobufException
      */
     public static function decodeToJson(string $encodedInput): string {
-        return json_encode(static::decodeToArray($encodedInput));
+        return json_encode(self::decodeToArray($encodedInput));
     }
 
     /**
@@ -53,7 +53,7 @@ final class Decoder {
      * @throws GeobufException
      */
     public static function decodeFileToArray(string $fileName): array {
-        return static::decodeToArray(file_get_contents($fileName));
+        return self::decodeToArray(file_get_contents($fileName));
     }
 
     /**
@@ -62,36 +62,36 @@ final class Decoder {
      * @throws GeobufException
      */
     public static function decodeToArray(string $encodedInput): array {
-        static::$data = new Data();
-        static::$data->mergeFromString($encodedInput);
-        static::$e = 10 ** static::$data->getPrecision();
-        static::$dim = static::$data->getDimensions();
+        self::$data = new Data();
+        self::$data->mergeFromString($encodedInput);
+        self::$e = 10 ** self::$data->getPrecision();
+        self::$dim = self::$data->getDimensions();
 
         try {
-            static::$data->mergeFromString($encodedInput);
+            self::$data->mergeFromString($encodedInput);
         } catch (\Exception $e) {
             throw new GeobufException('Error while decoding Geobuf: ' . $e->getMessage(), 0, $e);
         }
 
-        switch (static::$data->getDataType()) {
+        switch (self::$data->getDataType()) {
             case 'feature_collection':
-                return static::decodeFeatureCollection(static::$data->getFeatureCollection());
+                return self::decodeFeatureCollection(self::$data->getFeatureCollection());
             case 'feature':
-                return static::decodeFeature(static::$data->getFeature());
+                return self::decodeFeature(self::$data->getFeature());
             case 'geometry':
-                return static::decodeGeometry(static::$data->getGeometry());
+                return self::decodeGeometry(self::$data->getGeometry());
         }
 
-        throw new GeobufException('Unknown data type ' . static::$data->getDataType());
+        throw new GeobufException('Unknown data type ' . self::$data->getDataType());
     }
 
     private static function decodeFeatureCollection(FeatureCollection $featureCollection): array {
         $obj = ['type' => 'FeatureCollection', 'features' => []];
 
-        static::decodeProperties($featureCollection->getCustomProperties(), $featureCollection->getValues(), $obj);
+        self::decodeProperties($featureCollection->getCustomProperties(), $featureCollection->getValues(), $obj);
 
         foreach ($featureCollection->getFeatures() as $feature) {
-            $obj['features'][] = static::decodeFeature($feature);
+            $obj['features'][] = self::decodeFeature($feature);
         }
 
         return $obj;
@@ -100,13 +100,13 @@ final class Decoder {
     private static function decodeFeature(Feature $feature): array {
         $obj = ['type' => 'Feature'];
 
-        static::decodeProperties($feature->getCustomProperties(), $feature->getValues(), $obj);
-        static::decodeId($feature, $obj);
+        self::decodeProperties($feature->getCustomProperties(), $feature->getValues(), $obj);
+        self::decodeId($feature, $obj);
 
-        $obj['geometry'] = static::decodeGeometry($feature->getGeometry());
+        $obj['geometry'] = self::decodeGeometry($feature->getGeometry());
 
         if (\count($feature->getProperties()) > 0) {
-            $obj['properties'] = static::decodeProperties($feature->getProperties(), $feature->getValues());
+            $obj['properties'] = self::decodeProperties($feature->getProperties(), $feature->getValues());
         }
 
         return $obj;
@@ -115,14 +115,13 @@ final class Decoder {
     /**
      * @param RepeatedField|Value[] $values
      */
-    private static function decodeProperties(array|RepeatedField $props, array|RepeatedField $values, ?array &$dest = null): array {
-        $dest ??= [];
+    private static function decodeProperties(array|RepeatedField $props, array|RepeatedField $values, array &$dest = []): array {
         $numProps = \count($props);
         if ($numProps === 0) {
             return $dest;
         }
 
-        $keys = static::$data->getKeys();
+        $keys = self::$data->getKeys();
         $r = $numProps > 2 ? range(0, $numProps - 1, 2) : [0];
 
         foreach ($r as $i) {
@@ -157,45 +156,42 @@ final class Decoder {
         }
     }
 
-    /**
-     * @return array
-     */
     private static function decodeGeometry(?Geometry $geometry): ?array {
         if ($geometry === null) {
             return null;
         }
-        $gt = static::GEOMETRY_TYPES[$geometry->getType()];
+        $gt = self::GEOMETRY_TYPES[$geometry->getType()];
         $obj = ['type' => $gt];
 
-        static::decodeProperties($geometry->getCustomProperties(), $geometry->getValues(), $obj);
+        self::decodeProperties($geometry->getCustomProperties(), $geometry->getValues(), $obj);
 
         switch ($gt) {
             case 'GeometryCollection':
                 $obj['geometries'] = array_map(
-                    fn ($g) => static::decodeGeometry($g),
+                    fn ($g) => self::decodeGeometry($g),
                     $geometry->getGeometries()
                 );
                 break;
             case 'Point':
-                $obj['coordinates'] = static::decodePoint($geometry->getCoords());
+                $obj['coordinates'] = self::decodePoint($geometry->getCoords());
                 break;
             case 'LineString':
             case 'MultiPoint':
-                $obj['coordinates'] = static::decodeLine($geometry->getCoords());
+                $obj['coordinates'] = self::decodeLine($geometry->getCoords());
                 break;
             case 'MultiLineString':
             case 'Polygon':
-                $obj['coordinates'] = static::decodeMultiLine($geometry, $gt === 'Polygon');
+                $obj['coordinates'] = self::decodeMultiLine($geometry, $gt === 'Polygon');
                 break;
             case 'MultiPolygon':
-                $obj['coordinates'] = static::decodeMultiPolygon($geometry);
+                $obj['coordinates'] = self::decodeMultiPolygon($geometry);
         }
 
         return $obj;
     }
 
     private static function decodeCoord(float $coord): float {
-        return $coord / static::$e;
+        return $coord / self::$e;
     }
 
     /**
@@ -204,7 +200,7 @@ final class Decoder {
     private static function decodePoint($coords): array {
         $return = [];
         foreach ($coords as $coord) { // can't use array_map as $coords might be a RepeatedField
-            $return[] = static::decodeCoord((float) $coord);
+            $return[] = self::decodeCoord((float) $coord);
         }
 
         return $return;
@@ -216,22 +212,22 @@ final class Decoder {
     private static function decodeLine($coords, ?bool $isClosed = false): array {
         $obj = [];
         $numCoords = \count($coords);
-        $r = range(0, static::$dim - 1);
-        $r2 = $numCoords > static::$dim ? range(0, $numCoords - 1, static::$dim) : [0];
-        $p0 = array_fill(0, static::$dim, 0);
+        $r = range(0, self::$dim - 1);
+        $r2 = $numCoords > self::$dim ? range(0, $numCoords - 1, self::$dim) : [0];
+        $p0 = array_fill(0, self::$dim, 0);
 
         foreach ($r2 as $i) {
             $p = array_map(
                 fn ($j) => ($p0[$j] ?? 0) + ($coords[$i + $j] ?? 0),
                 $r
             );
-            $obj[] = static::decodePoint($p);
+            $obj[] = self::decodePoint($p);
             $p0 = $p;
         }
 
         if ($isClosed === true) {
             $p = array_map(fn ($j) => $coords[$j], $r);
-            $obj[] = static::decodePoint($p);
+            $obj[] = self::decodePoint($p);
         }
 
         return $obj;
@@ -240,15 +236,15 @@ final class Decoder {
     private static function decodeMultiLine(Geometry $geometry, ?bool $isClosed = false): array {
         $coords = $geometry->getCoords();
         if (\count($geometry->getLengths()) === 0) {
-            return [static::decodeLine($coords, $isClosed)];
+            return [self::decodeLine($coords, $isClosed)];
         }
 
         $obj = [];
         $i = 0;
 
         foreach ($geometry->getLengths() as $length) {
-            $obj[] = static::decodeLine(\array_slice($coords, $i, $i + $length * static::$dim), $isClosed);
-            $i += $length * static::$dim;
+            $obj[] = self::decodeLine(\array_slice($coords, $i, $i + $length * self::$dim), $isClosed);
+            $i += $length * self::$dim;
         }
 
         return $obj;
@@ -258,7 +254,7 @@ final class Decoder {
         $lengths = $geometry->getLengths();
         $coords = $geometry->getCoords();
         if (\count($lengths) === 0) {
-            return [[static::decodeLine($coords, true)]];
+            return [[self::decodeLine($coords, true)]];
         }
 
         $obj = [];
@@ -272,9 +268,9 @@ final class Decoder {
             $rings = [];
 
             foreach (\array_slice($coords, $j, $j + $numRings) as $l) {
-                $rings[] = static::decodeLine(\array_slice($coords, $i, $i + $l * static::$dim), true);
+                $rings[] = self::decodeLine(\array_slice($coords, $i, $i + $l * self::$dim), true);
                 ++$j;
-                $i += $l * static::$dim;
+                $i += $l * self::$dim;
             }
 
             $obj[] = $rings;

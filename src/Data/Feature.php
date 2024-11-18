@@ -178,8 +178,6 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
     /**
      * add unique value.
      *
-     * @param mixed $var
-     *
      * @return $this
      */
     public function addValue($var) {
@@ -218,8 +216,6 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
     /**
      * Add property.
      *
-     * @param mixed $var
-     *
      * @return $this
      */
     public function addProperty($var) {
@@ -257,8 +253,6 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
 
     /**
      * add arbitrary property.
-     *
-     * @param mixed $var
      *
      * @return $this
      */

@@ -92,8 +92,6 @@ class FeatureCollection extends Message implements IHasCustomProperties {
     }
 
     /**
-     * @param mixed $var
-     *
      * @return $this
      */
     public function addValue($var) {
@@ -127,8 +125,6 @@ class FeatureCollection extends Message implements IHasCustomProperties {
 
     /**
      * Add a custom property.
-     *
-     * @param mixed $var
      *
      * @return $this
      */

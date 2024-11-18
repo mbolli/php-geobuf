@@ -90,8 +90,6 @@ class Data extends Message {
     /**
      * add to the global arrays of unique keys.
      *
-     * @param mixed $var
-     *
      * @return $this
      */
     public function addKey($var) {
