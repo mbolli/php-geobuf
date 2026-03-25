@@ -63,15 +63,15 @@ final class Decoder {
      */
     public static function decodeToArray(string $encodedInput): array {
         self::$data = new Data();
-        self::$data->mergeFromString($encodedInput);
-        self::$e = 10 ** self::$data->getPrecision();
-        self::$dim = self::$data->getDimensions();
 
         try {
             self::$data->mergeFromString($encodedInput);
         } catch (\Exception $e) {
             throw new GeobufException('Error while decoding Geobuf: ' . $e->getMessage(), 0, $e);
         }
+
+        self::$e = 10 ** self::$data->getPrecision();
+        self::$dim = self::$data->getDimensions();
 
         switch (self::$data->getDataType()) {
             case 'feature_collection':
