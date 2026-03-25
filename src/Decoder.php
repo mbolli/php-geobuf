@@ -267,8 +267,8 @@ final class Decoder {
             ++$j;
             $rings = [];
 
-            foreach (\array_slice($coords, $j, $j + $numRings) as $l) {
-                $rings[] = self::decodeLine(\array_slice($coords, $i, $i + $l * self::$dim), true);
+            foreach (\array_slice($lengths, $j, $numRings) as $l) {
+                $rings[] = self::decodeLine(\array_slice($coords, $i, $l * self::$dim), true);
                 ++$j;
                 $i += $l * self::$dim;
             }
