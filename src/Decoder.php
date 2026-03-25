@@ -243,7 +243,7 @@ final class Decoder {
         $i = 0;
 
         foreach ($geometry->getLengths() as $length) {
-            $obj[] = self::decodeLine(\array_slice($coords, $i, $i + $length * self::$dim), $isClosed);
+            $obj[] = self::decodeLine(\array_slice($coords, $i, $length * self::$dim), $isClosed);
             $i += $length * self::$dim;
         }
 
