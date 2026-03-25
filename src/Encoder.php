@@ -72,6 +72,7 @@ final class Encoder {
             throw new GeobufException('Error while decoding GeoJSON: ' . $e->getMessage(), 0, $e);
         }
 
+        self::$keys = [];
         self::$data = new Data();
         self::$data->setDimensions($dim);
         self::$data->setPrecision($precision);
@@ -200,12 +201,12 @@ final class Encoder {
      * @param IHasCustomProperties|IHasProperties $obj
      */
     private static function encodeProperty(string $key, $val, $obj, bool $custom = false): void {
-        $keyIndex = array_search($key, self::$keys, true);
-
-        if ($keyIndex === false) {
-            self::$keys[$key] = true;
+        if (\array_key_exists($key, self::$keys)) {
+            $keyIndex = self::$keys[$key];
+        } else {
             self::$data->addKey($key);
             $keyIndex = \count(self::$data->getKeys()) - 1;
+            self::$keys[$key] = $keyIndex;
         }
 
         $value = new Value();
