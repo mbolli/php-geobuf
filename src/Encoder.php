@@ -57,7 +57,7 @@ final class Encoder {
      * @throws GeobufException
      */
     public static function encodeToFile(string $filePath, string $dataJson, int $precision = 6, int $dim = 2): bool|int {
-        return file_put_contents($filePath, self::encode($dataJson));
+        return file_put_contents($filePath, self::encode($dataJson, $precision, $dim));
     }
 
     /**
