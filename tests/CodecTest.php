@@ -7,7 +7,7 @@ const GEOJSON_DIR = './tests/geojson';
 
 // test all geojson files
 foreach (scandir(GEOJSON_DIR) as $i => $file) {
-    if (is_dir($file)) continue;
+    if (is_dir(GEOJSON_DIR . DIRECTORY_SEPARATOR . $file)) continue;
     if (!preg_match("/^(.*)\.(geo|g)?json$/", $file)) continue;
 
     test('codec: ' . $file, function () use ($file) {
