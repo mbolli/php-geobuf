@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Encoder`: `$keys` deduplication never matched (compared strings against `true` values with strict mode); keys were never deduplicated and `$keys` was never reset between calls.
 - `Tests`: `is_dir()` was called with a bare filename instead of the full path.
 
+### Changed
+
+- CI: updated `actions/checkout` to v6, `actions/cache` to v5, added PHP 8.5 to test matrix.
+
 ## [0.2.0] - 2024-11-08
 
 ### Changed
