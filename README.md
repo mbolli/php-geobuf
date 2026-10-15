@@ -106,3 +106,7 @@ bin/protoc --proto_path=src --php_out=build src/geobuf.proto
 ```
 
 Used was [this proto file](./geobuf.proto), lightly modified from the [mapbox/geobuf proto file](https://github.com/mapbox/geobuf/blob/master/geobuf.proto) for proto3 compatibility and automated namespace generation.
+
+## Maintainer
+
+Maintained by [Michael Bolli](https://github.com/mbolli) at [zwei und eins gmbh](https://zweiundeins.gmbh), Aarberg, Switzerland.
